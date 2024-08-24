@@ -1,0 +1,16 @@
+﻿@model Guid
+@{
+    ViewBag.Title = "404 Error";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+<div class="alert alert-danger mt-1 mb-1">
+    <div align="center">
+        404 Not Found Error : Maaf, Akun Id @Model Tidak Tersedia
+    </div>
+</div>
+<div align="center">
+    <a asp-action="Index" asp-controller="User" asp-area="MasterData" class="btn btn-outline-success">
+        Kembali
+    </a>
+</div>

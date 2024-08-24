@@ -1,0 +1,227 @@
+﻿@{
+    ViewData["Title"] = "Approval Purchase Request";
+    Layout = "~/Views/Shared/_TopNavbarTransaksi.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Transaksi.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model ApprovalPurchaseRequestViewModel
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+            
+            <form enctype="multipart/form-data" asp-controller="ApprovalPurchaseRequest" asp-action="ApprovalPurchaseRequest" method="post" class="form-horizontal">
+                <div class="card-body">
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+                    @*<input asp-for="Status" value="Belum Disetujui" type="hidden">*@
+                    <input type="hidden" asp-for="ApprovalId" />
+                    <input type="hidden" asp-for="PurchaseRequestId" />                    
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="PenggunaId" />
+                    @*Jika dihilangkan tidak berjalan walaupun sudah ditampilkan dengan statement*@
+                    <input type="hidden" asp-for="ApproveDate" />
+                    <input type="hidden" asp-for="ApproveBy" />
+                    <input type="hidden" asp-for="QtyTotal" />
+                    <input type="hidden" asp-for="GrandTotal" />
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PurchaseRequestNumber">No. Pesanan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PurchaseRequestNumber" class="form-control form-control-border border-width-2" id="purchaserequestnumber" placeholder="Nomor PR" readonly>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserId">
+                            Dibuat Oleh
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserId" asp-items="@ViewBag.Users" class="form-control select2bs4" id="userid" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih User--</option>
+                            </select>
+                            <span asp-validation-for="UserId" class="error"></span>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="BengkelId">
+                            Bengkel
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="BengkelId" asp-items="@ViewBag.Bengkel" class="form-control select2bs4" id="bengkel" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih Bengkel--</option>
+                            </select>
+                            <span asp-validation-for="BengkelId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PenggunaId">
+                            Mengetahui
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PenggunaId" asp-items="@ViewBag.Pengguna" class="form-control select2bs4" id="penggunaid" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih Penanggung Jawab--</option>
+                            </select>
+                            <span asp-validation-for="PenggunaId" class="error"></span>
+                        </div>
+                    </div>
+                    @if (Model.Status == "Disetujui" || Model.Status == "Ditolak")
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                            <div class="col-sm-10">
+                                @*Perbedaan nya adalah ketika sudah disetujui/ditolak form input Status dan Keterangan di nonaktifkan*@
+                                <select class="form-control select2bs4" style="width: 100%;" asp-for="Status" disabled>
+                                    <option value="" hidden disabled selected>--Pilih Status--</option>
+                                    <option>Disetujui</option>
+                                    <option>Belum Disetujui</option>
+                                    <option>Ditolak</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="ApproveDate">Tgl Disetujui/Ditolak</label>
+                            <div class="col-sm-10">
+                                <input type="text" asp-for="ApproveDate" class="form-control form-control-border border-width-2" id="approvedate" placeholder="Approve Date" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="ApproveBy">Disetujui/Ditolak Oleh</label>
+                            <div class="col-sm-10">
+                                <input type="text" asp-for="ApproveBy" class="form-control form-control-border border-width-2" id="approveby" placeholder="Approve By" readonly disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Keterangan">Keterangan</label>
+                            <div class="col-sm-10">
+                                <input asp-for="Keterangan" autocomplete="off" class="form-control" disabled>
+                                <span asp-validation-for="Keterangan" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.Status == "Belum Disetujui")
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                            <div class="col-sm-10">
+                                <select class="form-control select2bs4" style="width: 100%;" asp-for="Status">
+                                    <option value="" hidden disabled selected>--Pilih Status--</option>
+                                    <option>Disetujui</option>
+                                    <option>Belum Disetujui</option>
+                                    <option>Ditolak</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Keterangan">Keterangan</label>
+                            <div class="col-sm-10">
+                                <input asp-for="Keterangan" autocomplete="off" class="form-control">
+                                <span asp-validation-for="Keterangan" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="card card-default">
+                        <div class="card-header bg-red">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">No</th>
+                                            <th>Kode Produk</th>
+                                            <th>Nama Produk</th>
+                                            <th>Principal</th>
+                                            <th>Satuan</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-right">Harga</th>
+                                            <th class="text-right">Diskon</th>
+                                            <th class="text-right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.PurchaseRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.PurchaseRequestDetails.Count - Model.PurchaseRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.PurchaseRequestDetails[i].KodeProduk" type="hidden" value="@Model.PurchaseRequestDetails[i].KodeProduk">@Model.PurchaseRequestDetails[i].KodeProduk</td>
+                                                <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.PurchaseRequestDetails[i].NamaProduk" type="hidden" value="@Model.PurchaseRequestDetails[i].NamaProduk">@Model.PurchaseRequestDetails[i].NamaProduk</td>
+                                                <td class="text-left"><input class="detprincipal" asp-for="@Model.PurchaseRequestDetails[i].Principal" type="hidden" value="@Model.PurchaseRequestDetails[i].Principal">@Model.PurchaseRequestDetails[i].Principal</td>
+                                                <td class="text-left"><input class="detsatuan" asp-for="@Model.PurchaseRequestDetails[i].Satuan" type="hidden" value="@Model.PurchaseRequestDetails[i].Satuan">@Model.PurchaseRequestDetails[i].Satuan</td>
+                                                <td class="text-center row-qty"><input class="text-center detqty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
+                                                <td class="text-right"><input class="detprice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                                <td class="text-right"><input class="detdiskon" asp-for="@Model.PurchaseRequestDetails[i].Diskon" type="hidden" value="@Model.PurchaseRequestDetails[i].Diskon">@Model.PurchaseRequestDetails[i].Diskon</td>
+                                                <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>                                                
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="5" class="text-right">Total Qty</th>                                            
+                                            <td id="producttotalqty" class="text-left productTotalQty">@Model.QtyTotal</td>
+                                            <th colspan="2" class="text-right">Grand Total</th>
+                                            <td id="productgrandtotal" class="text-right productGrandTotal">@Model.GrandTotal</td>                                            
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>                        
+                    </div>
+                    <!-- start button footer -->
+                    <div class="card card-orange">
+                        <div class="card-body">
+                            @if(Model.Status == "Belum Disetujui")
+                            {
+                                <button type="submit" class="btn btn-primary bg-red float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Simpan</div></button>                                
+                                <a class="btn btn-default" asp-action="Index" asp-controller="ApprovalPurchaseRequest" asp-area="Transaksi" id="btnbatal">Batal</a>
+                            }
+                            else if (Model.Status == "Disetujui" || Model.Status == "Ditolak")
+                            {
+                                <a class="btn btn-default" asp-action="Index" asp-controller="ApprovalPurchaseRequest" asp-area="Transaksi" id="btnbatal">Batal</a>
+                            }                           
+                        </div>
+                    </div>
+                    <!-- /.end button footer -->                    
+                </div>
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Detail Pembayaran";
+    Layout = "~/Views/Shared/_TopNavbarAdministrasi.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Administrasi.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model NoiSys.Areas.Administrasi.Models.Pembayaran
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="Pembayaran" asp-action="DetailPembayaran" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="PaymentId" type="hidden" />
+                    <input asp-for="UserId" id="userid" type="hidden">
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PaymentNumber">No. Pembayaran</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PaymentNumber" class="form-control form-control-border border-width-2" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="InvoiceNumber">No. INV</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="InvoiceNumber" class="form-control form-control-border border-width-2" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="BankId">
+                            Dikirim Dari Bank
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="BankId" asp-items="@ViewBag.Bank" class="form-control select2bs4" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="BankId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserId">
+                            Dibuat Oleh
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserId" asp-items="@ViewBag.Users" class="form-control select2bs4" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="UserId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PenggunaId">
+                            Mengetahui
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PenggunaId" asp-items="@ViewBag.Pengguna" class="form-control select2bs4" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="PenggunaId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Termin">
+                            Termin
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="Termin" asp-items="@ViewBag.Termin" class="form-control select2bs4" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="Termin" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="BengkelId">
+                            Nama Bengkel
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="BengkelId" asp-items="@ViewBag.Bengkel" class="form-control select2bs4" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="BengkelId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Status" class="form-control form-control-border border-width-2" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="GrandTotal">Nominal Dibayar</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="GrandTotal" class="form-control form-control-border border-width-2" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Keterangan">Keterangan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Keterangan" class="form-control form-control-border border-width-2" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <a class="btn btn-default" asp-action="Index" asp-controller="Pembayaran">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script src="~/js/serverpendaftaran.js"></script>   
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

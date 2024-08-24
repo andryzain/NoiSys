@@ -1,0 +1,759 @@
+﻿@{
+    ViewData["Title"] = "Detail Purchase Request";
+    Layout = "~/Views/Shared/_TopNavbarTransaksi.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Transaksi.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model NoiSys.Areas.Transaksi.Models.PurchaseRequest
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="PurchaseRequest" asp-action="DetailPurchaseRequest" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="PurchaseRequestId" type="hidden" />                    
+                    <input asp-for="Status" id="status" value="Belum Disetujui" type="hidden">
+                    <input asp-for="UserId" id="userid" type="hidden">
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PurchaseRequestNumber">No. Pesanan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PurchaseRequestNumber" class="form-control form-control-border border-width-2" id="purchaserequestnumber" placeholder="Nomor PR" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="BengkelId">
+                            Bengkel
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="BengkelId" asp-items="@ViewBag.Bengkel" class="form-control select2bs4" id="bengkel" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih Bengkel--</option>
+                            </select>
+                            <span asp-validation-for="BengkelId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Termin">
+                            Termin
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="Termin" asp-items="@ViewBag.Termin" class="form-control select2bs4" id="termin" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih Termin--</option>
+                            </select>
+                            <span asp-validation-for="Termin" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PenggunaId">
+                            Mengetahui (*)
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PenggunaId" asp-items="@ViewBag.Approval" class="form-control select2bs4" style="width: 100%;" id="approval" disabled>
+                                <option value="" hidden disabled selected>--Pilih User--</option>
+                            </select>
+                            <span asp-validation-for="PenggunaId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Keterangan">Keterangan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Keterangan" class="form-control form-control-border border-width-2" id="keterangan" placeholder="Keterangan" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-red">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        @if (Model.Status == "Belum Disetujui")
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <select asp-items="@ViewBag.Produk" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Pilih Produk--" disabled>
+                                            <option value="" hidden disabled selected>--Pilih Produk--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty" disabled>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <input id="btnAdd" type="button" class="btn btn-success bg-red" value="Tambah">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-2">
+                                    <span>Kode Produk</span>
+                                    <input autocomplete="off" class="form-control" id="kodeproduk" placeholder="Kode Produk" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span>Nama Produk</span>
+                                    <input autocomplete="off" class="form-control" id="namaproduk" placeholder="Nama Produk" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Stok</span>
+                                    <input autocomplete="off" class="form-control" id="stoktersedia" placeholder="Stok" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <span>Principal</span>
+                                    <input autocomplete="off" class="form-control" id="principal" placeholder="Principal" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Satuan</span>
+                                    <input autocomplete="off" class="form-control" id="satuan" placeholder="Satuan" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Diskon</span>
+                                    <input autocomplete="off" class="form-control" id="diskon" placeholder="Diskon" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <span>Harga</span>
+                                    <input autocomplete="off" class="form-control" id="harga" placeholder="Harga" readonly>
+                                    <span class="error">Wajib Diisi !</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">No</th>
+                                        <th>Kode Produk</th>
+                                        <th>Nama Produk</th>
+                                        <th>Principal</th>
+                                        <th>Satuan</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-right">Harga</th>
+                                        <th class="text-right">Diskon</th>
+                                        <th class="text-right">Total</th>
+                                        <th class="text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.PurchaseRequestDetails.Count; i++)
+                                    {
+                                        var no = (Model.PurchaseRequestDetails.Count - Model.PurchaseRequestDetails.Count) + i + 1;
+
+                                        <tr id="R$@no" class="detailProduct">
+                                            <td class="row-index text-center"><p>@no</p></td>
+                                            <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.PurchaseRequestDetails[i].KodeProduk" type="hidden" value="@Model.PurchaseRequestDetails[i].KodeProduk">@Model.PurchaseRequestDetails[i].KodeProduk</td>
+                                            <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.PurchaseRequestDetails[i].NamaProduk" type="hidden" value="@Model.PurchaseRequestDetails[i].NamaProduk">@Model.PurchaseRequestDetails[i].NamaProduk</td>
+                                            <td class="text-left"><input class="detprincipal" asp-for="@Model.PurchaseRequestDetails[i].Principal" type="hidden" value="@Model.PurchaseRequestDetails[i].Principal">@Model.PurchaseRequestDetails[i].Principal</td>
+                                            <td class="text-left"><input class="detsatuan" asp-for="@Model.PurchaseRequestDetails[i].Satuan" type="hidden" value="@Model.PurchaseRequestDetails[i].Satuan">@Model.PurchaseRequestDetails[i].Satuan</td>
+                                            <td class="text-center row-qty"><input class="detqty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
+                                            <td class="text-right"><input class="detprice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                            <td class="text-right"><input class="detdiskon" asp-for="@Model.PurchaseRequestDetails[i].Diskon" type="hidden" value="@Model.PurchaseRequestDetails[i].Diskon">@Model.PurchaseRequestDetails[i].Diskon</td>
+                                            <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>
+                                            <td class="text-center"><button class="btn btn-danger btn-sm">X</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right">Total Qty</th>
+                                        <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                        <th colspan="2" class="text-right">Grand Total</th>
+                                        <td id="productgrandtotal" class="text-right productGrandTotal">@Model.GrandTotal</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @if (Model.Status == "Belum Disetujui")
+                        {
+                            @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                            <input type="button" value="Simpan" id="submit" class="btn btn-primary bg-red float-left fw-bold">
+                            <a class="btn btn-info" id="btnubah">Ubah</a>
+                            <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                            <a class="btn btn-danger" asp-action="DeleteProduk" asp-controller="PurchaseRequest" asp-area="Transaksi" asp-route-id="@Model.PurchaseRequestId" id="btnhapus">Hapus</a>
+                            <a class="btn btn-info" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Transaksi" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Batal</a>
+                        }
+                        else if (Model.Status == "Disetujui")
+                        {
+                            <a class="btn btn-success" asp-action="GeneratePurchaseOrder" asp-controller="PurchaseRequest" asp-area="Transaksi" asp-route-id="@Model.PurchaseRequestId">Buat Purchase Order</a>
+                            <a class="btn btn-info" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Transaksi" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Batal</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-info" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Transaksi" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Batal</a>
+                        }
+                    </div>
+                </div>                
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script src="~/js/serverpendaftaran.js"></script>
+    @*<script src="~/js/tablepr.js"></script>*@
+    <script src="~/scripts/purchaserequestdetails.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>
+        $(function () {
+            $("#submit").hide();
+            $("#btnbatalubah").hide();
+            $("#btnAdd").hide();
+            $(".btn-sm").hide();
+
+            $("#btnubah").click(function () {
+                $("#btnubah").hide();
+                $("#btnhapus").hide();
+                $("#btnbatal").hide();
+                $("#submit").show();
+                $("#btnbatalubah").show();
+                $("#btnAdd").show();
+                $(".btn-sm").show();
+                $("#produklist").show();
+                $("#qty").show();
+
+                document.getElementById("purchaserequestnumber").disabled = false;
+                document.getElementById("bengkel").disabled = false;
+                document.getElementById("termin").disabled = false;                
+                document.getElementById("approval").disabled = false;
+                document.getElementById("keterangan").disabled = false;
+                document.getElementById("produklist").disabled = false;
+                document.getElementById("qty").disabled = false;
+            })
+
+            $("#btnbatalubah").click(function () {
+                $("#btnubah").show();
+                $("#btnhapus").show();
+                $("#btnbatal").show();
+                $("#submit").hide();
+                $("#btnbatalubah").hide();
+                $("#btnAdd").hide();
+                $(".btn-sm").hide();
+
+                document.getElementById("purchaserequestnumber").disabled = true;
+                document.getElementById("bengkel").disabled = true;
+                document.getElementById("termin").disabled = true;
+                document.getElementById("approval").disabled = true;
+                document.getElementById("keterangan").disabled = true;
+                document.getElementById("produklist").disabled = true;
+                document.getElementById("qty").disabled = true;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadProduk")',
+                    dataType: 'json',
+                    data: { id: $("#produklist").val() },
+                    success: function (item) {
+                        $.each(item, function () {
+                            $("#kodeproduk").val(item.kodeProduk);
+                            $("#namaproduk").val(item.namaProduk);
+                            $("#stoktersedia").val(item.jumlahStok);
+                            $("#principal").val(item.principal.namaPrincipal);
+                            $("#satuan").val(item.satuan.namaSatuan);
+                            $("#diskon").val(item.diskon.nilai);
+                            $("#harga").val(item.hargaJual);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Gagal ambil data Produk' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $("#qty").val('1');
+            });
+        });
+    </script>
+
+    <script>
+        function qtyInput(qtySpecial) {
+            var qtySpecial = qtySpecial.replace(/[^0-9]+/g, "");
+            document.getElementById("qty").value = "";
+            document.getElementById("qty").value = qtySpecial;
+        };
+    </script>
+
+    <script>
+        var emptyRow = "<tr><td colspan='10' class='text-center'> Tidak ada item...</td></tr>";        
+
+        $(document).ready(function () {
+            var detailItem = []
+            var detail = {};
+
+            var detailName = document.getElementsByClassName("row-productNumber");
+            var detailNameProduct = document.getElementsByClassName("row-productName");
+
+            $('#qty').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    swal({
+                        title: "Peringatan",
+                        text: "Silahkah Klik Tombol Tambah",
+                        type: "warning"
+                    });
+                }
+            });
+
+            //Add button click function
+            $('#btnAdd').click(function () {
+                var qtyInputan = parseInt($('#qty').val());
+                var qtyTersedia = parseInt($('#stoktersedia').val());
+
+                if (qtyInputan <= 1000 && qtyInputan > 0 && qtyInputan < qtyTersedia) {
+                    if (detailName.length >= 0) {
+                        var isValidItem = true;
+                        if ($('#kodeproduk').val().trim() == '') {
+                            isValidItem = false;
+                            $('#kodeproduk').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#kodeproduk').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#namaproduk').val().trim() == '') {
+                            isValidItem = false;
+                            $('#namaproduk').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#namaproduk').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#principal').val().trim() == '') {
+                            isValidItem = false;
+                            $('#principal').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#principal').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#satuan').val().trim() == '') {
+                            isValidItem = false;
+                            $('#satuan').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#satuan').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if (!($('#qty').val().trim() != '' && !isNaN($('#qty').val().trim()))) {
+                            isValidItem = false;
+                            $('#qty').siblings('span.error').css('visibility', 'visible');
+                            $("#qty").val('').focus();
+                        } else {
+                            $('#qty').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#harga').val().trim() == '') {
+                            isValidItem = false;
+                            $('#harga').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#harga').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#diskon').val().trim() == '') {
+                            isValidItem = false;
+                            $('#diskon').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#diskon').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        //Add Item to List if Valid
+                        if (isValidItem) {
+
+                            var productNumber = $('#kodeproduk').val().trim();
+                            var productName = $('#namaproduk').val().trim();
+                            var principal = $('#principal').val().trim();
+                            var measurement = $('#satuan').val().trim();
+                            var qty = parseInt($('#qty').val().trim());
+                            var price = parseFloat($('#harga').val().trim());
+                            var discount = (parseInt($('#qty').val().trim()) * parseFloat($('#harga').val().trim())) * (parseInt($('#diskon').val().trim()) / 100);
+                            var total = (parseInt($('#qty').val().trim()) * parseFloat($('#harga').val().trim())) - (parseInt($('#qty').val().trim()) * parseFloat($('#harga').val().trim())) * (parseInt($('#diskon').val().trim()) / 100);
+
+                            if ($('#tbldetailpr tbody').children().children().length == 1) {
+                                $('#tbldetailpr tbody').html('');
+                            }
+                            var no = $('#tbldetailpr tbody').children().length + 1;
+                            //var no = 0;
+                            var dynamicName = '<tr><td>' + productName + '</td></tr>'
+
+                            //create dynamic html string
+                            let i;
+                            for (i = 0; i <= detailName.length; i++) {
+                                if (detailName.length == 0) {
+                                    checkDuplicate = undefined;
+                                }
+                                else if (detailName.length > 0 && detailName[i] != undefined) {
+                                    if (detailName[i].innerText != productNumber) {
+                                        checkDuplicate = undefined;
+                                    }
+                                    else {
+                                        swal({
+                                            title: "Peringatan",
+                                            text: "Nama produk " + detailNameProduct[i].innerText + " sudah ada",
+                                            type: "warning"
+                                        });
+
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#kodeproduk,#namaproduk,#stoktersedia,#principal,#satuan,#qty,#harga,#diskon").val('');
+                                        return;
+                                    }
+                                }
+                            }
+
+                            function dataName(proName) {
+                                return proName == dynamicName;
+                            }
+
+                            if (checkDuplicate == undefined) {
+                                //var dynamicTr = `<tr id="R${no}"><td class="row-index text-center"><p>${no}</p></td><td class="text-center">${productNumber}</td><td class="text-left row-productName">${productName}</td><td class="text-left">${principal}</td><td class="text-center">${measurement}</td><td class="text-center row-qty">${qty}</td><td class="text-right">${price}</td><td class="text-right">${discount}</td><td class="text-right row-total">${total}</td><td class="text-center"> <button class="btn btn-danger btn-sm">-</button> </td></tr>`;
+                                var dynamicTr = `
+                                @for (int i = 0; i < 1; i++) {
+                                                <tr id="R${no}" class="detailProduct">
+                                                        <td class="row-index text-center"><p>${no}</p></td>
+                                                        <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.PurchaseRequestDetails[i].KodeProduk" type="hidden" value="${productNumber}">${productNumber}</td>
+                                                        <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.PurchaseRequestDetails[i].NamaProduk" type="hidden" value="${productName}">${productName}</td>
+                                                        <td class="text-left"><input class="detprincipal" asp-for="@Model.PurchaseRequestDetails[i].Principal" type="hidden" value="${principal}">${principal}</td>
+                                                        <td class="text-left"><input class="detsatuan" asp-for="@Model.PurchaseRequestDetails[i].Satuan" type="hidden" value="${measurement}">${measurement}</td>
+                                                        <td class="text-center row-qty"><input class="detqty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
+                                                        <td class="text-right"><input class="detprice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="${price}">${price}</td>
+                                                        <td class="text-right"><input class="detdiskon" asp-for="@Model.PurchaseRequestDetails[i].Diskon" type="hidden" value="${discount}">${discount}</td>
+                                                        <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="${total}">${total}</td>
+                                                        <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td>
+                                                </tr>}`;
+
+                                $('#tbldetailpr tbody').append(dynamicTr);
+
+                                detailItem.push(dynamicTr);
+
+                                sumQty();
+                                sumGranTotal();
+                                                                
+                                $('#produklist').select2('val', 'selectedIndex', 0);
+                                $("#produklist").data('placeholder');
+                                $("#kodeproduk,#namaproduk,#stoktersedia,#principal,#satuan,#qty,#harga,#diskon").val('');
+
+                                $('.btn-sm').click(function () {
+                                    var child = $(this).closest('tr').nextAll();
+
+                                    child.each(function () {
+                                        var id = $(this).attr('id');
+                                        if (id.length > 2) {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(2));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        } else {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(1));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        }
+
+                                    });
+
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item berhasil dihapus",
+                                        type: "success"
+                                    });
+
+                                    if ($('#tbldetailpr tbody').children().children().length == 0) {
+                                        $('#tbldetailpr tbody').append(emptyRow);
+                                        sumQty();
+                                        sumGranTotal();
+                                    } else {
+                                        sumQty();
+                                        sumGranTotal();
+                                    }
+
+                                });
+                            } else {
+                                $('#errorDisplay').siblings('span.error').css('visibility', 'visible');
+                                return;
+                            }
+
+                            function sumQty() {
+                                var sumQty = parseInt(0);
+                                var getTotalQty = document.getElementsByClassName("row-qty");
+                                for (var i = 0; i < getTotalQty.length; i++) {
+                                    var totalqty = getTotalQty[i].innerText;
+                                    //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                                    sumQty = sumQty + parseInt(totalqty);
+                                }
+                                $('.productTotalQty').text(sumQty);
+                            }
+
+                            function sumGranTotal() {
+                                var sumGrandTotal = parseInt(0);
+                                var getTotal = document.getElementsByClassName("row-total");
+                                for (var i = 0; i < getTotal.length; i++) {
+                                    var subtotal = getTotal[i].innerText;
+                                    sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                                }
+                                $('.productGrandTotal').text(sumGrandTotal);
+                            }
+                        }
+                    }
+                } else if ($('#qty').val() > $('#stoktersedia').val()) {
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Melebihi Stok Tersedia !",
+                        type: "warning"
+                    });
+
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#kodeproduk,#namaproduk,#stoktersedia,#principal,#satuan,#qty,#harga,#diskon").val('');
+                } else if ($('#qty').val() == 0) {
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Tidak Boleh 0",
+                        type: "warning"
+                    });
+
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#kodeproduk,#namaproduk,#stoktersedia,#principal,#satuan,#qty,#harga,#diskon").val('');
+                } else {
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Maksimal 1000",
+                        type: "warning"
+                    });
+
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#kodeproduk,#namaproduk,#stoktersedia,#principal,#satuan,#qty,#harga,#diskon").val('');
+                }                
+            });
+
+
+            //Delete Item
+            $('.btn-sm').click(function () {
+                var child = $(this).closest('tr').nextAll();
+
+                child.each(function () {
+                    var id = $(this).attr('id');
+                    if (id.length > 2) {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(2));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    } else {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(1));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    }
+
+                });
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item berhasil dihapus",
+                    type: "success"
+                });
+
+                if ($('#tbldetailpr tbody').children().children().length == 0) {
+                    $('#tbldetailpr tbody').append(emptyRow);
+                    sumQty();
+                    sumGranTotal();
+                } else {
+                    sumQty();
+                    sumGranTotal();
+                }
+
+                function sumQty() {
+                    var sumQty = parseInt(0);
+                    var getTotalQty = document.getElementsByClassName("row-qty");
+                    for (var i = 0; i < getTotalQty.length; i++) {
+                        var totalqty = getTotalQty[i].innerText;
+                        //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                        sumQty = sumQty + parseInt(totalqty);
+                    }
+                    $('.productTotalQty').text(sumQty);
+                }
+
+                function sumGranTotal() {
+                    var sumGrandTotal = parseInt(0);
+                    var getTotal = document.getElementsByClassName("row-total");
+                    for (var i = 0; i < getTotal.length; i++) {
+                        var subtotal = getTotal[i].innerText;
+                        sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                    }
+                    $('.productGrandTotal').text(sumGrandTotal);
+                }
+            });
+
+            //Save button click function
+            $('#submit').click(function () {
+                var isAllValid = true;
+                var detailItemDone = [];
+                var detailDone = {};
+                var Approve1 = $('#approval').find(":selected").val();
+                var Termin1 = $('#termin').find(":selected").val();
+                var Bengkel1 = $('#bengkel').find(":selected").val();
+                var detailTable = $('#tbldetailpr tbody').children().children().length;
+
+                if (detailTable == 1) {
+                    swal({
+                        title: "Peringatan",
+                        text: "Item pada tabel tidak boleh kosong",
+                        type: "warning"
+                    });                    
+                    isAllValid = false;                    
+                } else {
+                    $("#tbldetailpr").find("tbody").children("tr").each(function (index, element) {
+                        //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeproduk,namaproduk,dst harus sama.
+                        detailDone.kodeproduk = $(element).find(".detkodeproduk").val();
+                        detailDone.namaproduk = $(element).find(".detnamaproduk").val();
+                        detailDone.principal = $(element).find(".detprincipal").val();
+                        detailDone.satuan = $(element).find(".detsatuan").val();
+                        detailDone.qty = $(element).find(".detqty").val();
+                        detailDone.price = $(element).find(".detprice").val();
+                        detailDone.diskon = $(element).find(".detdiskon").val();
+                        detailDone.subtotal = $(element).find(".detsubtotal").val();
+                        detailItemDone.push(detailDone);
+                        detailDone = {};
+                    });
+
+                    var PurchaseRequestNumber = $('#purchaserequestnumber').val();
+                    //var PurchaseOrderNumber = $('#purchaseordernumber').val();
+                    var UserId = $('#userid').val();
+                    var PenggunaId = $('#approval').val();
+                    var BengkelId = $('#bengkel').val();
+                    var Termin = $('#termin').val();
+                    var Status = $('#status').val();
+                    var QtyTotal = $('.productTotalQty').text();
+                    var GrandTotal = $('.productGrandTotal').text();
+                    var Keterangan = $('#keterangan').val();
+                    var PurchaseRequestDetail = detailItemDone;
+                }
+
+                if (isAllValid) {
+                    var dataPost = {};
+                    dataPost.PurchaseRequestNumber = PurchaseRequestNumber;
+                    //dataPost.PurchaseOrderNumber = PurchaseOrderNumber;
+                    dataPost.UserId = UserId;
+                    dataPost.PenggunaId = PenggunaId;
+                    dataPost.BengkelId = BengkelId;
+                    dataPost.Termin = Termin;
+                    dataPost.Status = Status;
+                    dataPost.QtyTotal = QtyTotal;
+                    dataPost.GrandTotal = GrandTotal;
+                    dataPost.Keterangan = Keterangan;
+                    dataPost.PurchaseRequestDetails = PurchaseRequestDetail;
+
+                    $(this).val('Sedang diproses...');
+
+                    $.post("@Url.Action("DetailPurchaseRequest", "PurchaseRequest")", { model: dataPost },
+                        function (data) {
+                            window.location.href = data.redirectToUrl;
+                        }
+                    );
+                }
+            });
+        });
+    </script>
+
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

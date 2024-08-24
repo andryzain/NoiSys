@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "Daftar Role Pengguna";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model ICollection<NoiSys.Areas.Identity.Data.ApplicationUser>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-red">
+                <div class="card-header">
+                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                @if (signInManager.IsSignedIn(User))
+                                {
+                                    <a class="btn bg-red" asp-action="CreateRole" asp-controller="Role" asp-area="MasterData">
+                                        <div style="color:#ffffff">Tambah</div>
+                                    </a>
+                                }
+                            </div>
+                            <!-- /.form-group -->
+                        </div>                        
+                    </div>
+                    <!-- /.row -->
+                    
+                    @if (Model != null && @Model.Any())
+                    {
+                        <div class="card-body table-responsive p-0">
+                            <table id="tblPendaftaranPasienBaru" class="table table-hover table-head-fixed text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Pengguna</th>
+                                        <th>Level</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model)
+                                    {
+                                        <tr data-href="@Url.Action("DetailRole", "Role", new {id=user.Id})">
+                                            <th></th>
+                                            <td>@user.NamaLengkap</td>
+                                            <td>@user.LevelPengguna.NamaLevel</td>
+                                            <td>@user.Email</td>                                            
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <!-- /.card-body -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <script type="text/javascript">
+                        window.onload = function () {
+                            swal("Berhasil", '@TempData["SuccessMessage"]', "success");
+                        };
+                    </script>
+                }
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+@section Scripts{
+    <script src="~/js/serverpendaftaran.js"></script>
+
+    <style>
+        tr[data-href] {
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = document.querySelectorAll("tr[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+    </script>
+}

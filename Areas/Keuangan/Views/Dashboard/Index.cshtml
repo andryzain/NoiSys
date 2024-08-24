@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_TopNavbarKeuangan.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="row mb-2">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+
+            <a asp-controller="Dashboard" asp-action="Index" asp-area="Keuangan">
+                <div class="small-box " style="background-color:#2959A5">
+                    @*change color in adminlte.min.cs*@
+                    @*<div class="inner">
+                    <h4 class="fw-bold" style="color:#ffffff">Master Data</h4>
+                    <p style="color:#ffffff">Master Data</p>
+                    </div>
+                    <div class="icon">
+                    <i class="fas fa-warehouse"></i>
+                    </div>*@
+                    @*<a href="#" class="small-box-footer">Masuk <i class="fas fa-arrow-circle-right"></i></a>*@
+                </div>
+            </a>
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

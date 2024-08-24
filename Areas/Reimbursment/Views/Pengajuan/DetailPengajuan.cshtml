@@ -1,0 +1,667 @@
+﻿@{
+    ViewData["Title"] = "Detail Pengajuan";
+    Layout = "~/Views/Shared/_TopNavbarReimbursment.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Reimbursment.Models;
+@using NoiSys.Areas.Reimbursment.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model NoiSys.Areas.Reimbursment.Models.Pengajuan
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="Pengajuan" asp-action="DetailPengajuan" method="post" class="form-horizontal">
+                <div class="card-body">
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+                    <input asp-for="Status" id="status" value="Belum Disetujui" type="hidden">                    
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PengajuanNumber">No. Pengajuan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PengajuanNumber" class="form-control form-control-border border-width-2" id="PengajuanNumber" placeholder="Nomor PR" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserId">
+                            Nama User
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserId" asp-items="@ViewBag.Users" class="form-control select2bs4" id="userid" style="width: 100%;" readonly disabled></select>
+                            <span asp-validation-for="UserId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="BankId">
+                            Nama Bank
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="BankId" asp-items="@ViewBag.Bank" class="form-control select2bs4" id="namabank" style="width: 100%;" disabled></select>
+                            <span asp-validation-for="BankId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="NomorRekening">No. Rekening</label>
+                        <div class="col-sm-10">
+                            <input type="text" maxlength="50" asp-for="NomorRekening" class="form-control form-control-border border-width-2" id="nomorrekening" placeholder="Nomor Rekening" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="AtasNama">Atas Nama</label>
+                        <div class="col-sm-10">
+                            <input type="text" maxlength="100" asp-for="AtasNama" class="form-control form-control-border border-width-2" id="atasnama" placeholder="Atas Nama" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-red">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <select asp-items="@ViewBag.Item" class="form-control select2bs4" style="width: 100%;" id="itemlist" data-placeholder="--Pilih Item--">
+                                        <option value="" hidden disabled selected>--Pilih Item--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    @if (signInManager.IsSignedIn(User))
+                                    {
+                                        <a class="btn bg-red" id="btnAdd">
+                                            <div style="color:#ffffff">Tambah</div>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <span>Kode Item</span>
+                                <input autocomplete="off" class="form-control" id="kodeitem" placeholder="Kode Item" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <span>Nama Item</span>
+                                <input autocomplete="off" class="form-control" id="namaitem" placeholder="Nama Item" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-1">
+                                <span>Qty</span>
+                                <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty">
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <span>Nominal</span>
+                                <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" id="nominal" placeholder="Nominal">
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <span>Catatan</span>
+                                <input autocomplete="off" maxlength="100" class="form-control" type="text" id="catatan" placeholder="Catatan">
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailitem" class="table table-hover table-head-fixed text-nowrap table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">No</th>
+                                        <th class="text-left">Kode</th>
+                                        <th class="text-left">Item</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-right">Nominal</th>
+                                        <th class="text-right">Total</th>
+                                        <th class="text-left">Catatan</th>
+                                        <th class="text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.PengajuanDetails.Count; i++)
+                                    {
+                                        var no = (Model.PengajuanDetails.Count - Model.PengajuanDetails.Count) + i + 1;
+
+                                        <tr id="R$@no" class="detailProduct">
+                                            <td class="row-index text-center"><p>@no</p></td>
+                                            <td class="text-left row-kodeitem"><input class="detkodeitem" asp-for="@Model.PengajuanDetails[i].KodeItem" type="hidden" value="@Model.PengajuanDetails[i].KodeItem">@Model.PengajuanDetails[i].KodeItem</td>
+                                            <td class="text-left row-namaitem"><input class="detnamaitem" asp-for="@Model.PengajuanDetails[i].NamaItem" type="hidden" value="@Model.PengajuanDetails[i].NamaItem">@Model.PengajuanDetails[i].NamaItem</td>
+                                            <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PengajuanDetails[i].Qty" type="hidden" value="@Model.PengajuanDetails[i].Qty">@Model.PengajuanDetails[i].Qty</td>
+                                            <td class="text-right"><input class="detNominal" asp-for="@Model.PengajuanDetails[i].Nominal" type="hidden" value="@Model.PengajuanDetails[i].Nominal">@Model.PengajuanDetails[i].Nominal</td>
+                                            <td class="text-right row-total"><input class="detTotal" asp-for="@Model.PengajuanDetails[i].SubTotal" type="hidden" value="@Model.PengajuanDetails[i].SubTotal">@Model.PengajuanDetails[i].SubTotal</td>
+                                            <td class="text-right"><input class="detCatatan" asp-for="@Model.PengajuanDetails[i].Catatan" type="hidden" value="@Model.PengajuanDetails[i].Catatan">@Model.PengajuanDetails[i].Catatan</td>
+                                            <td class="text-center"> <button class="btn btn-danger btn-sm">X</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" class="text-right">Total Qty</th>
+                                        <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                        <th colspan="1" class="text-right">Grand Total</th>
+                                        <td id="productgrandtotal" class="text-right productGrandTotal">@Model.GrandTotal</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @if (Model.Status == "Belum Disetujui")
+                        {
+                            @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                            <input type="button" value="Simpan" id="submit" class="btn btn-primary bg-red float-left fw-bold">
+                            <a class="btn btn-info" id="btnubah">Ubah</a>
+                            <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                            <a class="btn btn-danger" asp-action="DeleteProduk" asp-controller="Pengajuan" asp-area="Reimbursment" asp-route-id="@Model.PengajuanId" id="btnhapus">Hapus</a>
+                            <a class="btn btn-info" asp-action="PrintPengajuan" asp-controller="Pengajuan" asp-area="Reimbursment" asp-route-id="@Model.PengajuanId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Pengajuan">Batal</a>
+                        }
+                        else if (Model.Status == "Disetujui")
+                        {
+                            <a class="btn btn-success" asp-action="GeneratePembayaran" asp-controller="Pengajuan" asp-area="Reimbursment" asp-route-id="@Model.PengajuanId">Pembayaran</a>
+                            <a class="btn btn-info" asp-action="PrintPengajuan" asp-controller="Pengajuan" asp-area="Reimbursment" asp-route-id="@Model.PengajuanId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Pengajuan">Batal</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-info" asp-action="PrintPengajuan" asp-controller="Pengajuan" asp-area="Reimbursment" asp-route-id="@Model.PengajuanId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Pengajuan">Batal</a>
+                        }
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>
+        $(function () {
+            $("#submit").hide();
+            $("#btnbatalubah").hide();
+            $("#btnAdd").hide();
+            $(".btn-sm").hide();
+
+            $("#btnubah").click(function () {
+                $("#btnubah").hide();
+                $("#btnhapus").hide();
+                $("#btnbatal").hide();
+                $("#submit").show();
+                $("#btnbatalubah").show();
+                $("#btnAdd").show();
+                $(".btn-sm").show();
+
+                document.getElementById("namabank").disabled = false;
+                document.getElementById("nomorrekening").disabled = false;
+                document.getElementById("atasnama").disabled = false;
+            })
+
+            $("#btnbatalubah").click(function () {
+                $("#btnubah").show();
+                $("#btnhapus").show();
+                $("#btnbatal").show();
+                $("#submit").hide();
+                $("#btnbatalubah").hide();
+                $("#btnAdd").hide();
+                $(".btn-sm").hide();
+
+                document.getElementById("namabank").disabled = true;
+                document.getElementById("nomorrekening").disabled = true;
+                document.getElementById("atasnama").disabled = true;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#itemlist").change(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadItemReimbursment")',
+                    dataType: 'json',
+                    data: { id: $("#itemlist").val() },
+                    success: function (item) {
+                        $.each(item, function () {
+                            $("#kodeitem").val(item.kodeItemReimbursment);
+                            $("#namaitem").val(item.namaItemReimbursment);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Gagal ambil data Produk' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        function qtyInput(qtySpecial) {
+            var qtySpecial = qtySpecial.replace(/[^0-9]+/g, "");
+            document.getElementById("qty").value = "";
+            document.getElementById("qty").value = qtySpecial;
+        };
+    </script>
+
+    <script>
+        var emptyRow = "<tr><td colspan='10' class='text-center'> Data belum tersedia</td></tr>";
+
+        $(document).ready(function () {
+            var detailItem = []
+            var detail = {};
+
+            var detailKodeItem = document.getElementsByClassName("row-kodeitem");
+            var detailNamaItem = document.getElementsByClassName("row-namaitem");
+
+            $('#qty').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    swal({
+                        title: "Peringatan",
+                        text: "Silahkah Klik Tombol Tambah",
+                        type: "warning"
+                    });
+                }
+            });
+
+            //Add button click function
+            $('#btnAdd').click(function () {
+                var qtyInputan = parseInt($('#qty').val());
+                var nominalInputan = parseFloat($('#nominal').val().trim())
+
+                if (qtyInputan > 0) {
+                    if (detailItem.length >= 0) {
+                        var isValidItem = true;
+                        if ($('#kodeitem').val().trim() == '') {
+                            isValidItem = false;
+                            $('#kodeitem').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#kodeitem').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#namaitem').val().trim() == '') {
+                            isValidItem = false;
+                            $('#namaitem').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#namaitem').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#qty').val().trim() == '') {
+                            isValidItem = false;
+                            $('#qty').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#qty').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#nominal').val().trim() == '') {
+                            isValidItem = false;
+                            $('#nominal').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#nominal').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        //Add Item to List if Valid
+                        if (isValidItem) {
+
+                            var itemCode = $('#kodeitem').val().trim();
+                            var itemName = $('#namaitem').val().trim();
+                            var qty = parseInt($('#qty').val().trim());
+                            var nominal = parseFloat($('#nominal').val().trim());
+                            var total = qty * nominal;
+                            var catatan = $('#catatan').val().trim();
+
+                            if ($('#tbldetailitem tbody').children().children().length == 1) {
+                                $('#tbldetailitem tbody').html('');
+                            }
+                            var no = $('#tbldetailitem tbody').children().length + 1;
+                            //var no = 0;
+                            var dynamicName = '<tr><td>' + itemName + '</td></tr>'
+
+                            //create dynamic html string
+                            //var checkDuplicate = detailKodeItem.find(dataName);
+                            let i;
+                            for (i = 0; i <= detailKodeItem.length; i++) {
+                                if (detailKodeItem.length == 0) {
+                                    checkDuplicate = undefined;
+                                }
+                                else if (detailKodeItem.length > 0 && detailKodeItem[i] != undefined) {
+                                    if (detailKodeItem[i].innerText != itemCode) {
+                                        checkDuplicate = undefined;
+                                    }
+                                    else {
+                                        swal({
+                                            title: "Peringatan",
+                                            text: "Nama item " + detailNamaItem[i].innerText + " sudah ada",
+                                            type: "warning"
+                                        });
+
+                                        $('#itemlist').select2('val', 'selectedIndex', 0);
+                                        $("#itemlist").data('placeholder');
+                                        $("#kodeitem,#namaitem,#qty,#nominal,#catatan").val('');
+                                        return;
+                                    }
+                                }
+                            }
+
+                            function dataName(proName) {
+                                return proName == dynamicName;
+                            }
+
+                            if (checkDuplicate == undefined) {
+                                //var dynamicTr = `<tr id="R${no}"><td class="row-index text-center"><p>${no}</p></td><td class="text-center">${itemCode}</td><td class="text-left row-itemName">${itemName}</td><td class="text-left">${principal}</td><td class="text-center">${measurement}</td><td class="text-center row-qty">${qty}</td><td class="text-right">${nominal}</td><td class="text-right">${catatan}</td><td class="text-right row-total">${total}</td><td class="text-center"> <button class="btn btn-danger btn-sm">-</button> </td></tr>`;
+                                var dynamicTr =
+                                    `@for (int i = 0; i < 1; i++){
+                                                        <tr id="R${no}" class="detailProduct">
+                                                        <td class="row-index text-center"><p>${no}</p></td>
+                                                        <td class="text-left row-kodeitem"><input class="detkodeitem" asp-for="@Model.PengajuanDetails[i].KodeItem" type="hidden" value="${itemCode}">${itemCode}</td>
+                                                        <td class="text-left row-namaitem"><input class="detnamaitem" asp-for="@Model.PengajuanDetails[i].NamaItem" type="hidden" value="${itemName}">${itemName}</td>
+                                                        <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PengajuanDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
+                                                        <td class="text-right"><input class="detNominal" asp-for="@Model.PengajuanDetails[i].Nominal" type="hidden" value="${nominal}">${nominal}</td>
+                                                        <td class="text-right row-total"><input class="detTotal" asp-for="@Model.PengajuanDetails[i].SubTotal" type="hidden" value="${total}">${total}</td>
+                                                        <td class="text-right"><input class="detCatatan" asp-for="@Model.PengajuanDetails[i].Catatan" type="hidden" value="${catatan}">${catatan}</td>
+                                                        <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td></tr>}`;
+
+                                $('#tbldetailitem tbody').append(dynamicTr);
+
+                                detailItem.push(dynamicTr);
+                                //detailKodeItem.push(dynamicName);
+
+                                sumQty();
+                                sumGranTotal();
+
+                                $('#itemlist').select2('val', 'selectedIndex', 0);
+                                $("#itemlist").data('placeholder');
+                                $("#kodeitem,#namaitem,#qty,#nominal,#catatan").val('');
+
+                                $('.btn-sm').click(function () {
+                                    var child = $(this).closest('tr').nextAll();
+
+                                    child.each(function () {
+                                        var id = $(this).attr('id');
+                                        if (id.length > 2) {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(2));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        } else {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(1));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        }
+                                    });
+
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item berhasil dihapus",
+                                        type: "success"
+                                    });
+
+                                    if ($('#tbldetailitem tbody').children().children().length == 0) {
+                                        $('#tbldetailitem tbody').append(emptyRow);
+                                        sumQty();
+                                        sumGranTotal();
+                                    } else {
+                                        sumQty();
+                                        sumGranTotal();
+                                    }
+
+                                });
+                            } else {
+                                $('#errorDisplay').siblings('span.error').css('visibility', 'visible');
+                                return;
+                            }
+
+                            function sumQty() {
+                                var sumQty = parseInt(0);
+                                var getTotalQty = document.getElementsByClassName("row-qty");
+                                for (var i = 0; i < getTotalQty.length; i++) {
+                                    var totalqty = getTotalQty[i].innerText;
+                                    //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                                    sumQty = sumQty + parseInt(totalqty);
+                                }
+                                $('.productTotalQty').text(sumQty);
+                            }
+
+                            function sumGranTotal() {
+                                var sumGrandTotal = parseInt(0);
+                                var getTotal = document.getElementsByClassName("row-total");
+                                for (var i = 0; i < getTotal.length; i++) {
+                                    var subtotal = getTotal[i].innerText;
+                                    sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                                }
+                                $('.productGrandTotal').text(sumGrandTotal);
+                            }
+                        }
+                    }
+                } else if ($('#qty').val() == 0) {
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Tidak Boleh 0",
+                        type: "warning"
+                    });
+                    $('#itemlist').select2('val', 'selectedIndex', 0);
+                    $("#itemlist").data('placeholder');
+                    $("#kodeitem,#namaitem,#qty,#nominal,#catatan").val('');
+                }
+            });
+
+
+            //Delete item
+            $('.btn-sm').click(function () {
+                var child = $(this).closest('tr').nextAll();
+
+                child.each(function () {
+                    var id = $(this).attr('id');
+                    if (id.length > 2){
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(2));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    } else {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(1));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    }
+                    
+                });
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item berhasil dihapus",
+                    type: "success"
+                });
+
+                if ($('#tblItem tbody').children().children().length == 0) {
+                    $('#tblItem tbody').append(emptyRow);
+                } else {
+                    sumQty();
+                    sumGranTotal();
+                }
+
+                function sumQty() {
+                    var sumQty = parseInt(0);
+                    var getTotalQty = document.getElementsByClassName("row-qty");
+                    for (var i = 0; i < getTotalQty.length; i++) {
+                        var totalqty = getTotalQty[i].innerText;
+                        //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                        sumQty = sumQty + parseInt(totalqty);
+                    }
+                    $('.productTotalQty').text(sumQty);
+                }
+
+                function sumGranTotal() {
+                    var sumGrandTotal = parseInt(0);
+                    var getTotal = document.getElementsByClassName("row-total");
+                    for (var i = 0; i < getTotal.length; i++) {
+                        var subtotal = getTotal[i].innerText;
+                        sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                    }
+                    $('.productGrandTotal').text(sumGrandTotal);
+                }
+
+            });
+
+            //Save button click function
+            $('#submit').click(function () {
+                var isAllValid = true;
+                var detailItemDone = [];
+                var detailDone = {};
+                var qty = parseInt($('#qty').val());
+                var nominal = parseFloat($('#nominal').val());
+                var detailTable = $('#tbldetailitem tbody').children().children().length;
+
+                if (detailTable == 1) {
+                    swal({
+                        title: "Peringatan",
+                        text: "Item pada tabel tidak boleh kosong",
+                        type: "warning"
+                    });
+                    //$('#tbldetailitem tbody').html('<tr><td colspan="10" class="text-center"><span style="color:red;">Item belum tersedia</span></td></tr>');
+                    isAllValid = false;
+                } else if (detailTable != 1 && qty == '' && nominal == '') {
+                    $('#qty').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                    $('#nominal').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                    isAllValid = false;
+                } else if (detailTable != 1 && qty == '' && nominal != '') {
+                    $('#qty').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                    isAllValid = false;
+                } else if (detailTable != 1 && qty != '' && nominal == '') {
+                    $('#nominal').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                    isAllValid = false;
+                } else {
+                    //Sembunyikan pesan error
+                    $('#qty').siblings('span.error').css('visibility', 'hidden')
+                    $('#nominal').siblings('span.error').css('visibility', 'hidden')
+
+                    $("#tbldetailitem").find("tbody").children("tr").each(function (index, element) {
+                        //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeitem,namaitem,dst harus sama.
+                        detailDone.kodeitem = $(element).find(".detkodeitem").val();
+                        detailDone.namaitem = $(element).find(".detnamaitem").val();
+                        detailDone.qty = $(element).find(".detQty").val();
+                        detailDone.nominal = $(element).find(".detNominal").val();
+                        detailDone.catatan = $(element).find(".detCatatan").val();
+                        detailDone.subtotal = $(element).find(".detTotal").val();
+                        detailItemDone.push(detailDone);
+                        detailDone = {};
+                    });
+
+                    var PengajuanNumber = $('#PengajuanNumber').val();
+                    var UserId = $('#userid').val();
+                    var BankId = $('#namabank').val();
+                    var NomorRekening = $('#nomorrekening').val();
+                    var AtasNama = $('#atasnama').val();
+                    var Status = $('#status').val();
+                    var QtyTotal = $('.productTotalQty').text();
+                    var GrandTotal = $('.productGrandTotal').text();
+                    var PengajuanDetail = detailItemDone;
+                }
+
+                if (isAllValid) {
+                    var dataPost = {};
+                    dataPost.PengajuanNumber = PengajuanNumber;
+                    dataPost.UserId = UserId;
+                    dataPost.BankId = BankId;
+                    dataPost.NomorRekening = NomorRekening;
+                    dataPost.AtasNama = AtasNama;
+                    dataPost.Status = Status;
+                    dataPost.QtyTotal = QtyTotal;
+                    dataPost.GrandTotal = GrandTotal;
+                    dataPost.PengajuanDetails = PengajuanDetail;
+
+                    $(this).val('Sedang diproses...');
+
+                    $.post("@Url.Action("DetailPengajuan", "Pengajuan")", { model: dataPost },
+                        function (data) {
+                            window.location.href = data.redirectToUrl;
+                        }
+                    );
+                }
+            });
+        });
+    </script>
+
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

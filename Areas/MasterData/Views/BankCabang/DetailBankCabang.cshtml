@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "Detail Bank Cabang";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.MasterData.Models;
+@using NoiSys.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model DetailBankCabangViewModel
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="BankCabang" asp-action="DetailBankCabang" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input hidden asp-for="BankCabangId" />
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="KodeBankCabang">Kode Bank Cabang</label>
+                        <div class="col-sm-9">
+                            <input type="text" asp-for="KodeBankCabang" class="form-control form-control-border border-width-2" id="kodeBankCabang" placeholder="Kode Bank Cabang" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="BankId" class="col-sm-3 col-form-label">Nama Bank</label>
+                        <div class="col-sm-9">
+                            <select class="form-control select2bs4" style="width: 100%;" asp-for="BankId" asp-items="@ViewBag.Bank" id="bank" disabled>
+                                <option value="" hidden disabled selected>--Pilih Bank--</option>
+                            </select>
+                            <span asp-validation-for="BankId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NamaCabang">Nama Cabang</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="NamaCabang" class="form-control form-control-border border-width-2" id="namaCabang" placeholder="Nama Cabang" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NomorRekening">Nomor Rekening</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="NomorRekening" class="form-control form-control-border border-width-2" id="nomorRekening" placeholder="Nomor Rekening" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="AtasNama">Atas Nama</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="AtasNama" class="form-control form-control-border border-width-2" id="atasNama" placeholder="Atas Nama" disabled>
+                        </div>
+                    </div>
+                </div>
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary bg-red float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Simpan</div></button>&nbsp;
+                        <a class="btn btn-info" id="btnubah">Ubah</a>
+                        <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                        <a class="btn btn-danger" asp-action="DeleteBankCabang" asp-controller="BankCabang" asp-area="MasterData" asp-route-id="@Model.BankCabangId" id="btnhapus">Hapus</a>
+                        <a class="btn btn-default" asp-action="Index" asp-controller="BankCabang" asp-area="MasterData" id="btnbatal">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("kodeBankCabang").disabled = false;
+                                document.getElementById("bank").disabled = false;
+                                document.getElementById("namaCabang").disabled = false;                                
+                                document.getElementById("nomorRekening").disabled = false;
+                                document.getElementById("atasNama").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("kodeBankCabang").disabled = true;
+                                document.getElementById("bank").disabled = true;
+                                document.getElementById("namaCabang").disabled = true;
+                                document.getElementById("nomorRekening").disabled = true;
+                                document.getElementById("atasNama").disabled = true;
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

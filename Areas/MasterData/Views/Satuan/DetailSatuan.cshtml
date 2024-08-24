@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Detail Satuan";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.MasterData.Models;
+@using NoiSys.Areas.MasterData.ViewModels;
+
+@model DetailSatuanViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="Satuan" asp-action="DetailSatuan" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input hidden asp-for="SatuanId" />
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="KodeSatuan">Kode Satuan (*)</label>
+                        <div class="col-sm-9">
+                            <input type="text" asp-for="KodeSatuan" class="form-control form-control-border border-width-2" id="kodesatuan" placeholder="Kode Satuan" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NamaSatuan">Nama Satuan (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="NamaSatuan" class="form-control form-control-border border-width-2" id="namasatuan" placeholder="Nama Satuan" disabled>
+                        </div>
+                    </div>                    
+                </div>
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary bg-orange float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Simpan</div></button>&nbsp;
+                        <a class="btn btn-info" id="btnubah">Ubah</a>
+                        <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                        <a class="btn btn-danger" asp-action="DeleteSatuan" asp-controller="Satuan" asp-area="MasterData" asp-route-id="@Model.SatuanId" id="btnhapus">Hapus</a>
+                        <a class="btn btn-default" asp-action="Index" asp-controller="Satuan" asp-area="MasterData" id="btnbatal">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("kodesatuan").disabled = false;
+                                document.getElementById("namasatuan").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("kodesatuan").disabled = true;
+                                document.getElementById("namasatuan").disabled = true;
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

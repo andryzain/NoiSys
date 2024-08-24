@@ -1,0 +1,202 @@
+﻿@{
+    ViewData["Title"] = "Detail Pembelian";
+    Layout = "~/Views/Shared/_TopNavbarOrder.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Order.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model NoiSys.Areas.Order.Models.Pembelian
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="Pembelian" asp-action="DetailPembelian" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="PembelianId" type="hidden" />
+                    <input asp-for="UserId" id="userid" type="hidden">
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PembelianNumber">No. Pembelian</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PembelianNumber" class="form-control form-control-border border-width-2" id="Pembeliannumber" placeholder="No. Pembelian" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PermintaanId">
+                            No. Permintaan
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PermintaanId" asp-items="@ViewBag.Permintaan" class="form-control select2bs4" id="permintaannumber" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih No. Permintaan--</option>
+                            </select>
+                            <span asp-validation-for="PermintaanId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserId">
+                            Dibuat Oleh
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserId" asp-items="@ViewBag.Users" class="form-control select2bs4" id="userid" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih User--</option>
+                            </select>
+                            <span asp-validation-for="UserId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PenggunaId">
+                            Mengetahui
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PenggunaId" asp-items="@ViewBag.Mengetahui" class="form-control select2bs4" style="width: 100%;" id="mengetahui" disabled>
+                                <option value="" hidden disabled selected>--Pilih User--</option>
+                            </select>
+                            <span asp-validation-for="PenggunaId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DisetujuiOlehId">
+                            Disetujui Oleh
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="DisetujuiOlehId" asp-items="@ViewBag.Mengetahui" class="form-control select2bs4" style="width: 100%;" id="disetujui" disabled>
+                                <option value="" hidden disabled selected>--Pilih User--</option>
+                            </select>
+                            <span asp-validation-for="DisetujuiOlehId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Termin">
+                            Termin (*)
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="Termin" asp-items="@ViewBag.Termin" class="form-control select2bs4" id="termin" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Pilih Termin--</option>
+                            </select>
+                            <span asp-validation-for="Termin" class="error"></span>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Status" class="form-control form-control-border border-width-2" id="status" placeholder="Status" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Keterangan">Keterangan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Keterangan" class="form-control form-control-border border-width-2" id="keterangan" placeholder="Keterangan" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-red">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">No</th>
+                                        <th>Kode Produk</th>
+                                        <th>Nama Produk</th>
+                                        <th>Principal</th>
+                                        <th>Satuan</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-right">Harga</th>
+                                        <th class="text-right">Diskon</th>
+                                        <th class="text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.PembelianDetails.Count; i++)
+                                    {
+                                        var no = (Model.PembelianDetails.Count - Model.PembelianDetails.Count) + i + 1;
+
+                                        <tr id="R$@no" class="detailProduct">
+                                            <td class="row-index text-center"><p>@no</p></td>
+                                            <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.PembelianDetails[i].KodeProduk" type="hidden" value="@Model.PembelianDetails[i].KodeProduk">@Model.PembelianDetails[i].KodeProduk</td>
+                                            <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.PembelianDetails[i].NamaProduk" type="hidden" value="@Model.PembelianDetails[i].NamaProduk">@Model.PembelianDetails[i].NamaProduk</td>
+                                            <td class="text-left"><input class="detprincipal" asp-for="@Model.PembelianDetails[i].Principal" type="hidden" value="@Model.PembelianDetails[i].Principal">@Model.PembelianDetails[i].Principal</td>
+                                            <td class="text-left"><input class="detsatuan" asp-for="@Model.PembelianDetails[i].Satuan" type="hidden" value="@Model.PembelianDetails[i].Satuan">@Model.PembelianDetails[i].Satuan</td>
+                                            <td class="text-center row-qty"><input class="detqty" asp-for="@Model.PembelianDetails[i].Qty" type="hidden" value="@Model.PembelianDetails[i].Qty">@Model.PembelianDetails[i].Qty</td>
+                                            <td class="text-right"><input class="detprice" asp-for="@Model.PembelianDetails[i].Price" type="hidden" value="@Model.PembelianDetails[i].Price">@Model.PembelianDetails[i].Price</td>
+                                            <td class="text-right"><input class="detdiskon" asp-for="@Model.PembelianDetails[i].Diskon" type="hidden" value="@Model.PembelianDetails[i].Diskon">@Model.PembelianDetails[i].Diskon</td>
+                                            <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PembelianDetails[i].SubTotal" type="hidden" value="@Model.PembelianDetails[i].SubTotal">@Model.PembelianDetails[i].SubTotal</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right">Total Qty</th>
+                                        <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                        <th colspan="2" class="text-right">Grand Total</th>
+                                        <td id="productgrandtotal" class="text-right productGrandTotal">@Model.GrandTotal</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @if (Model.Status != "Diproses")
+                        {
+                            <a class="btn btn-success" asp-action="GeneratePayment" asp-controller="Pembelian" asp-area="Order" asp-route-id="@Model.PembelianId">Pembayaran</a>
+                            <a class="btn btn-info" asp-action="PrintPembelian" asp-controller="Pembelian" asp-area="Order" asp-route-id="@Model.PembelianId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Pembelian">Batal</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-info" asp-action="PrintPembelian" asp-controller="Pembelian" asp-area="Order" asp-route-id="@Model.PembelianId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Pembelian">Batal</a>
+                        }
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script src="~/js/serverpendaftaran.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

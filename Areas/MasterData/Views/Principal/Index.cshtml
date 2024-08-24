@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Daftar Principal";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.MasterData.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model IEnumerable<Principal>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-red">
+                <div class="card-header">
+                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                @if (signInManager.IsSignedIn(User))
+                                {
+                                    <a class="btn bg-red" asp-action="CreatePrincipal" asp-controller="Principal" asp-area="MasterData">
+                                        <div style="color:#ffffff">Tambah</div>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="input-group date" id="dateRange" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate" placeholder="Tanggal Mulai Pencarian..." />
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate" placeholder="Tanggal Akhir Pencarian..." />
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        <button type="submit" class="btn btn-default">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-5">
+                            <div class="form-group">
+                                <select class="form-control select2" style="width: 100%;" id="daterange-btn">
+                                    <option value="" hidden disabled selected>Pencarian Berdasarkan Waktu</option>
+                                    <option value="0">Semua Waktu</option>
+                                    <option value="30">30 Hari (1 Bulan)</option>
+                                    <option value="60">60 Hari (2 Bulan)</option>
+                                    <option value="90">90 Hari (3 Bulan)</option>
+                                    <option value="120">120 Hari (4 Bulan)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body table-responsive p-0">
+                        <table id="tblPendaftaranPasienBaru" class="table table-hover table-head-fixed text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal Dibuat</th>
+                                    <th>Kode Principal</th>
+                                    <th>Nama Principal</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr data-href="@Url.Action("DetailPrincipal", "Principal", new {id=user.PrincipalId})">
+                                        <th></th>
+                                        <td>@user.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                        <td>@user.KodePrincipal</td>
+                                        <td>@user.NamaPrincipal</td>
+                                        <td>@user.Email</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <script type="text/javascript">
+                        window.onload = function () {
+                            swal("Berhasil", '@TempData["SuccessMessage"]', "success");
+                        };
+                    </script>
+                }
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts{
+    <script src="~/js/serverpendaftaran.js"></script>
+
+    <style>
+        tr[data-href] {
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = document.querySelectorAll("tr[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+    </script>
+}

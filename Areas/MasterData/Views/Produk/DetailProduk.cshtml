@@ -1,0 +1,246 @@
+﻿@{
+    ViewData["Title"] = "Detail Produk";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.MasterData.Models;
+@using NoiSys.Areas.MasterData.ViewModels;
+
+@model ProdukViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="Produk" asp-action="DetailProduk" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input hidden asp-for="ProdukId" />
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="KodeProduk">Kode Produk (*)</label>
+                        <div class="col-sm-9">
+                            <input type="text" asp-for="KodeProduk" class="form-control form-control-border border-width-2" id="kodeProduk" placeholder="Kode Produk" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NamaProduk">Nama Produk (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="NamaProduk" class="form-control form-control-border border-width-2" id="namaProduk" placeholder="Nama Produk" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="PrincipalId">
+                            Principal (*)
+                        </label>
+                        <div class="col-sm-9">
+                            <select asp-for="PrincipalId" asp-items="@ViewBag.Principal" class="form-control select2bs4" style="width: 100%;" id="principal" disabled>
+                                <option value="" hidden disabled selected>--Pilih Principal--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="KategoriId">
+                            Kategori (*)
+                        </label>
+                        <div class="col-sm-9">
+                            <select asp-for="KategoriId" asp-items="@ViewBag.Kategori" class="form-control select2bs4" style="width: 100%;" id="kategori" disabled>
+                                <option value="" hidden disabled selected>--Pilih Kategori--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="JumlahStok">Jumlah Stok (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="number" asp-for="JumlahStok" class="form-control form-control-border border-width-2" id="jumlahstock" placeholder="Jumlah Stok" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="SatuanId">
+                            Satuan (*)
+                        </label>
+                        <div class="col-sm-9">
+                            <select asp-for="SatuanId" asp-items="@ViewBag.Satuan" class="form-control select2bs4" style="width: 100%;" id="satuan" disabled>
+                                <option value="" hidden disabled selected>--Pilih Satuan--</option>
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="currency">Currency</label>
+                        <input class="form-control text-start" data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 2, 'digitsOptional': false, 'prefix': '$ ', 'placeholder': '0'" inputmode="numeric" id="currency">
+                    </div>*@
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="HargaBeli">Harga Beli (*)</label>
+                        <div class="col-sm-9">                            
+                            @*<input maxlength="100" type="number" asp-format="{0:#,###}" oninput="this.value=(parseInt(this.value)||0)" asp-for="HargaBeli" class="form-control form-control-border border-width-2" id="hargabeli" placeholder="Harga Beli" disabled>*@
+                            <input asp-for="HargaBeli" type="text" class="span form-control form-control-border border-width-2" maxlength="100" placeholder="Harga Beli" id="hargabeli" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="HargaJual">Harga Jual (*)</label>
+                        <div class="col-sm-9">
+                            @*<input maxlength="100" type="number" asp-format="{0:#,###}" oninput="this.value=(parseInt(this.value)||0)" asp-for="HargaJual" class="form-control form-control-border border-width-2" id="hargajual" placeholder="Harga Jual" disabled>*@
+                            <input asp-for="HargaJual" type="text" class="span form-control form-control-border border-width-2" maxlength="100" placeholder="Harga Jual" id="hargajual" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Cogs">Cogs (*)</label>
+                        <div class="col-sm-9">
+                            @*<input maxlength="100" type="number" asp-format="{0:#,###}" oninput="this.value=(parseInt(this.value)||0)" asp-for="Cogs" class="form-control form-control-border border-width-2" id="cogs" placeholder="Cogs" disabled>*@
+                            <input asp-for="Cogs" type="text" class="span form-control form-control-border border-width-2" maxlength="100" placeholder="COGS" id="cogs" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="DiskonId">
+                            Diskon (*)
+                        </label>
+                        <div class="col-sm-9">
+                            <select asp-for="DiskonId" asp-items="@ViewBag.Diskon" class="form-control select2bs4" style="width: 100%;" id="diskon" disabled>
+                                <option value="" hidden disabled selected>--Pilih Diskon--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Catatan">Catatan</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="Catatan" class="form-control form-control-border border-width-2" id="catatan" placeholder="Catatan" disabled>
+                        </div>
+                    </div>
+                </div>
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary bg-red float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Simpan</div></button>&nbsp;
+                        <a class="btn btn-info" id="btnubah">Ubah</a>
+                        <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                        <a class="btn btn-danger" asp-action="DeleteProduk" asp-controller="Produk" asp-area="MasterData" asp-route-id="@Model.ProdukId" id="btnhapus">Hapus</a>
+                        <a class="btn btn-default" asp-action="Index" asp-controller="Produk" asp-area="MasterData" id="btnbatal">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <style>
+                        
+                    </style>
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+
+                            //Harga Beli
+                            $("#hargabeli").maskMoney({
+                                formatOnBlur: true,
+                                reverse: true,
+                                prefix: 'Rp ',
+                                //selectAllOnFocus: true,
+                                precision: 0
+                            });
+                            $('form').on('submit', function (e) {
+                                var hargabeli = $("#hargabeli").maskMoney('destroy').val()
+                                    .replace(/Rp\s|[.,]/g, '');
+                                $("#hargabeli").val(hargabeli);
+                                //e.preventDefault();
+                            })
+
+                            //Harga Jual
+                            $("#hargajual").maskMoney({
+                                formatOnBlur: true,
+                                reverse: true,
+                                prefix: 'Rp ',
+                                //selectAllOnFocus: true,
+                                precision: 0
+                            });
+                            $('form').on('submit', function (e) {
+                                var hargajual = $("#hargajual").maskMoney('destroy').val()
+                                    .replace(/Rp\s|[.,]/g, '');
+                                $("#hargajual").val(hargajual);
+                                //e.preventDefault();
+                            })
+
+                            //Cogs
+                            $("#cogs").maskMoney({
+                                formatOnBlur: true,
+                                reverse: true,
+                                prefix: 'Rp ',
+                                //selectAllOnFocus: true,
+                                precision: 0
+                            });
+                            $('form').on('submit', function (e) {
+                                var cogs = $("#cogs").maskMoney('destroy').val()
+                                    .replace(/Rp\s|[.,]/g, '');
+                                $("#cogs").val(cogs);
+                                //e.preventDefault();
+                            })                            
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("kodeProduk").disabled = false;
+                                document.getElementById("namaProduk").disabled = false;
+                                document.getElementById("principal").disabled = false;
+                                document.getElementById("kategori").disabled = false;
+                                document.getElementById("jumlahstock").disabled = false;
+                                document.getElementById("satuan").disabled = false;
+                                document.getElementById("hargabeli").disabled = false;
+                                document.getElementById("hargajual").disabled = false;
+                                document.getElementById("cogs").disabled = false;
+                                document.getElementById("diskon").disabled = false;
+                                document.getElementById("catatan").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("kodeProduk").disabled = true;
+                                document.getElementById("namaProduk").disabled = true;
+                                document.getElementById("principal").disabled = true;
+                                document.getElementById("kategori").disabled = true;
+                                document.getElementById("jumlahstock").disabled = true;
+                                document.getElementById("satuan").disabled = true;
+                                document.getElementById("hargabeli").disabled = true;
+                                document.getElementById("hargajual").disabled = true;
+                                document.getElementById("cogs").disabled = true;
+                                document.getElementById("diskon").disabled = true;
+                                document.getElementById("catatan").disabled = true;
+                            })
+                        })
+                    </script>                    
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

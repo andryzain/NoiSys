@@ -1,0 +1,104 @@
+﻿@model NoiSys.Areas.MasterData.ViewModels.RoleViewModel
+
+@{
+    ViewBag.Title = "Detail Role";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12 bg-white">
+                <div class="card-header bg-red">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <form enctype="multipart/form-data" asp-controller="Role" asp-action="DetailRole" method="post" class="form-horizontal">
+                    @Html.HiddenFor(h => Model.User.Id)                    
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="@Model.User.KodePengguna">Kode Pengguna</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control form-control-border border-width-2" id="exampleInputBorderWidth2" placeholder="Kode Pengguna" asp-for="@Model.User.KodePengguna" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="@Model.User.NamaLengkap">Nama Lengkap</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control form-control-border border-width-2" id="exampleInputBorderWidth2" placeholder="Nama Lengkap" asp-for="@Model.User.NamaLengkap" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="@Model.User.Email">Email</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control form-control-border border-width-2" id="exampleInputBorderWidth2" placeholder="Email" asp-for="@Model.User.Email" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- start data role -->
+                    <div class="card card-red">
+                        <div class="card-header">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Role Pengguna</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="card-body table-responsive p-0">
+                                    <table id="tblPendaftaranPasienBaru" class="table table-hover table-head-fixed text-nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Role Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i < Model.Roles.Count(); i++)
+                                            {
+                                                <tr>
+                                                    <th></th>
+                                                    <th>
+                                                        <div class="custom-control custom-checkbox col-sm-9">
+                                                            @Html.CheckBoxFor(c => Model.Roles[i].Selected, new {@class="custom-control-input"})
+                                                            @Html.HiddenFor(h => Model.Roles[i].Value)
+
+                                                            @Html.LabelFor(l => Model.Roles[i].Selected, Model.Roles[i].Text, new {@class="custom-control-label"})
+                                                            @Html.HiddenFor(h => Model.Roles[i].Text)
+                                                        </div>
+                                                    </th>                                                    
+                                                </tr>                                                
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>                                
+
+                                @*@foreach (var role in Model.Roles)
+                            {
+                            <div class="custom-control custom-checkbox col-sm-9">
+                            <input class="custom-control-input" type="checkbox" id="@role.Value" checked="@role.Selected">
+                            <label for="@role.Value" class="custom-control-label">@role.Text</label>
+                            </div>
+                            }*@
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.end data role -->
+                    <!-- start button footer -->
+                    <div class="card card-orange">
+                        <div class="card-body">
+                            <button type="submit" class="btn btn-primary bg-red float-left">Simpan</button>
+                            <a class="btn btn-default" asp-action="Index" asp-controller="Role">Batal</a>
+                        </div>
+                    </div>
+                    <!-- /.end button footer -->
+                </form>
+            </div>
+            <!--/.col (left) -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+@section Scripts{
+    <script src="~/js/serverpendaftaran.js"></script>    
+}

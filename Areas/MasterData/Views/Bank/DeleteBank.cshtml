@@ -1,0 +1,50 @@
+﻿@using NoiSys.Areas.MasterData.ViewModels;
+
+@{
+    ViewBag.Title = "Hapus Bank";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@model DetailBankViewModel
+
+<div class="card card-red">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+
+    <form enctype="multipart/form-data" asp-controller="Bank" asp-action="DeleteBank" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="BankId" />
+            <input hidden asp-for="KodeBank" />
+            <input hidden asp-for="NamaBank" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.NamaBank)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.KodeBank)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+
+        <div class="card-footer">
+            @*<form asp-action="DeleteBank" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="Bank" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

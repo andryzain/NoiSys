@@ -1,0 +1,41 @@
+﻿@using NoiSys.Areas.MasterData.ViewModels;
+
+@{
+    ViewBag.Title = "Hapus Bank Cabang";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@model DetailBankCabangViewModel
+
+<div class="card card-red">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+
+    <form enctype="multipart/form-data" asp-controller="BankCabang" asp-action="DeleteBankCabang" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="BankCabangId" />
+            <input hidden asp-for="KodeBankCabang" />
+            <input hidden asp-for="NamaCabang" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.NamaCabang)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.KodeBankCabang)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        <div class="card-footer">
+            @*<form asp-action="DeleteBankCabang" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="BankCabang" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

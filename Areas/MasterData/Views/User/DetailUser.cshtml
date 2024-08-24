@@ -1,0 +1,230 @@
+﻿@{
+    ViewData["Title"] = "Detail Pengguna";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+    var photoPath = "~/FotoPengguna/" + (Model.PenggunaPhotoPath ?? "pengguna.jpg");
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.MasterData.Models;
+@using NoiSys.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model DetailPenggunaViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="User" asp-action="DetailUser" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input hidden asp-for="PenggunaId" />
+                    <input hidden asp-for="PenggunaPhotoPath" />
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="KodePengguna">Kode Pengguna (*)</label>
+                        <div class="col-sm-9">
+                            <input type="text" asp-for="KodePengguna" class="form-control form-control-border border-width-2" id="kodepengguna" placeholder="Kode Pengguna" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NamaLengkap">Nama Lengkap (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="NamaLengkap" class="form-control form-control-border border-width-2" id="namalengkap" placeholder="Nama Lengkap" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NomorIdentitas">Nomor Identitas (*)</label>
+                        <div class="col-sm-9 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                            </div>
+                            <input asp-for="NomorIdentitas" type="text" class="form-control form-control-border border-width-2" autofocus autocomplete="off" id="nomoridentitas" placeholder="Nomor Identitas" data-inputmask='"mask": "9999999999999999"' data-mask-identitas disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="TempatLahir">Tempat Lahir (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="TempatLahir" class="form-control form-control-border border-width-2" id="tempatlahir" placeholder="Tempat Lahir" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="TanggalLahir">Tanggal Lahir</label>
+                        <div class="col-sm-9 input-group date" id="tanggallahir" data-target-input="nearest">
+                            <div class="input-group-append" data-target="#tanggallahir" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                            <input asp-for="TanggalLahir" type="text" class="form-control datetimepicker-input" data-target="#tanggallahir" id="tanggallahiruser" placeholder="Tanggal Lahir" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="JenisKelamin">Jenis Kelamin (*)</label>
+                        <div class="col-sm-9">
+                            <select asp-for="JenisKelamin" class="form-control select2bs4" style="width: 100%;" id="jeniskelamin" disabled>
+                                <option value="" hidden disabled selected>--Pilih Jenis Kelamin--</option>
+                                <option value="Laki-Laki">Laki-Laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="LevelId">
+                            Level Pengguna (*)
+                        </label>
+                        <div class="col-sm-9">
+                            <select asp-for="LevelId" asp-items="@ViewBag.LevelPengguna" class="form-control select2bs4" style="width: 100%;" id="level" disabled>
+                                <option value="" hidden disabled selected>--Pilih Level--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="AlamatLengkap">Alamat Rumah (*)</label>
+                        <div class="col-sm-9">
+                            <input maxlength="100" type="text" asp-for="AlamatLengkap" class="form-control form-control-border border-width-2" id="alamatrumah" placeholder="Alamat Rumah" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="NomorHandphone">No Handphone</label>
+                        <div class="col-sm-9 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            </div>
+                            <input asp-for="NomorHandphone" type="text" class="form-control form-control-border border-width-2" id="nomorhandphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Email">Email Aktif (*)</label>
+                        <div class="col-sm-9 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            </div>
+                            <input maxlength="100" autofocus autocomplete="off" asp-for="Email" type="email" class="form-control form-control-border border-width-2" id="email" placeholder="Email Aktif" disabled>
+                        </div>
+                    </div>                              
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Foto">Foto</label>
+                        <div class="col-sm-9">
+                            <div class="col-sm-9">
+                                <img src="@photoPath" asp-append-version="true" width="300" height="300" />
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="custom-file">
+                                    <input asp-for="Foto" class="form-control custom-file-input" id="foto" disabled>
+                                    <label class="custom-file-label">Ganti Foto...</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary bg-red float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Simpan</div></button>&nbsp;
+                        <a class="btn btn-info" id="btnubah">Ubah</a>
+                        <a class="btn btn-info" id="btnbatalubah">Batal Ubah</a>
+                        <a class="btn btn-danger" asp-action="DeleteUser" asp-controller="User" asp-area="MasterData" asp-route-id="@Model.PenggunaId" id="btnhapus">Hapus</a>
+                        <a class="btn btn-default" asp-action="Index" asp-controller="User" asp-area="MasterData" id="btnbatal">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })                            
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("kodepengguna").disabled = false;
+                                document.getElementById("namalengkap").disabled = false;
+                                document.getElementById("nomoridentitas").disabled = false;
+                                document.getElementById("tempatlahir").disabled = false;
+                                document.getElementById("tanggallahiruser").disabled = false;
+                                document.getElementById("jeniskelamin").disabled = false;
+                                document.getElementById("level").disabled = false;
+                                document.getElementById("alamatrumah").disabled = false;
+                                document.getElementById("nomorhandphone").disabled = false;
+                                document.getElementById("email").disabled = false;
+                                document.getElementById("foto").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("kodepengguna").disabled = true;
+                                document.getElementById("namalengkap").disabled = true;
+                                document.getElementById("nomoridentitas").disabled = true;
+                                document.getElementById("tempatlahir").disabled = true;
+                                document.getElementById("tanggallahiruser").disabled = true;
+                                document.getElementById("jeniskelamin").disabled = true;
+                                document.getElementById("level").disabled = true;
+                                document.getElementById("alamatrumah").disabled = true;
+                                document.getElementById("nomorhandphone").disabled = true;
+                                document.getElementById("email").disabled = true;
+                                document.getElementById("foto").disabled = true;
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(document).ready(function () {
+                            $('.custom-file-input').on("change", function () {
+                                var fileName = $(this).val().split("\\").pop();
+                                $(this).next('.custom-file-label').html(fileName);
+                            });
+                        });
+                    </script>                    
+
+                    <script>
+                        $(function () {
+                            //Data-Mask-Identitas
+                            $('[data-mask-identitas]').inputmask()
+
+                            //Data-Mask-Hp
+                            $('[data-mask-hp]').inputmask()
+
+                            //Tanggal Lahir
+                            $('#tanggallahir').datetimepicker({
+                                format: 'DD/MM/yyyy'
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

@@ -1,0 +1,668 @@
+﻿@{
+    ViewData["Title"] = "Tambah Receive Order";
+    Layout = "~/Views/Shared/_TopNavbarPenerimaan.cshtml";
+}
+
+@using NoiSys.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@using NoiSys.Areas.Penerimaan.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model NoiSys.Areas.Penerimaan.Models.ReceiveOrder
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-red">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="ReceiveOrder" asp-action="CreateReceiveOrder" method="post" class="form-horizontal">
+                <div class="card-body">
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+                    <input asp-for="ReceiveById" id="receivebyid" type="hidden">
+                    @Html.Hidden("pembelianNumber", (object)ViewBag.PembelianFilter)
+                    <input type="hidden" value="@ViewBag.PembelianFilter" class="form-control form-control-border border-width-2" />
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="ReceiveOrderNumber">No. Penerimaan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="ReceiveOrderNumber" class="form-control form-control-border border-width-2" id="receiveordernumber" placeholder="Nomor PR" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PembelianId">
+                            No. Pembelian
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PembelianId" asp-items="@ViewBag.PembelianFilter" class="form-control select2bs4" id="pembelianList" style="width: 100%;">
+                                <option value="" hidden disabled selected>--Pilih No. Pembelian--</option>
+                            </select>
+                            <span asp-validation-for="PembelianId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Status">
+                            Status (*)
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="Status" class="form-control select2bs4" style="width: 100%;" id="status">
+                                <option value="" hidden disabled selected>--Pilih Status--</option>
+                                <option value="Complete">Complete</option>
+                                <option value="NotComplete">NotComplete</option>
+                            </select>
+                            <span asp-validation-for="Status" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Catatan">Catatan</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Catatan" class="form-control form-control-border border-width-2" id="catatan" placeholder="Keterangan">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-red">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <select class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Pilih Produk Diterima--" >
+                                        <option value="" hidden disabled selected>--Pilih Produk Diterima--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input autocomplete="off" class="form-control row-qtyditerima" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qtyditerima" placeholder="Qty Diterima">
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @if (signInManager.IsSignedIn(User))
+                                    {
+                                        <a class="btn bg-red" id="btnAdd">
+                                            <div style="color:#ffffff">Tambah</div>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <span>Kode Produk</span>
+                                <input autocomplete="off" class="form-control" id="kodeproduk" placeholder="Kode Produk" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <span>Nama Produk</span>
+                                <input autocomplete="off" class="form-control" id="namaproduk" placeholder="Nama Produk" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <span>Satuan</span>
+                                <input autocomplete="off" class="form-control" id="satuan" placeholder="Satuan" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <span>Qty Diorder</span>
+                                <input autocomplete="off" class="form-control row-qtydiorder" id="qtydiorder" placeholder="Qty Diorder" readonly>
+                                <span class="error">Wajib Diisi !</span>
+                            </div>                            
+                        </div>
+
+                        <div class="card-body table-responsive p-0">                            
+                            <table id="tbldetailrcv" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">No</th>
+                                        <th class="text-left">Kode</th>
+                                        <th class="text-left">Nama Produk</th>
+                                        <th class="text-left">Satuan</th>
+                                        <th class="text-center">Qty Diorder</th>
+                                        <th class="text-center">Qty Diterima</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                @*<tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right">Total Qty</th>
+                                        <td id="producttotalqty" class="text-center productTotalQty">0</td>
+                                        <th colspan="2" class="text-right">Grand Total</th>
+                                        <td id="productgrandtotal" class="text-right productGrandTotal">0</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>*@
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                        <input type="button" value="Simpan" id="submit" class="btn btn-primary bg-red float-left fw-bold">
+                        <a class="btn btn-default" asp-action="Index" asp-controller="ReceiveOrder">Batal</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>        
+        $(document).ready(function () {
+            $("#pembelianList").change(function () {
+                $("#produklist").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadPembelian")',
+                    dataType: 'json',
+                    data: { id: $("#pembelianList").val() },
+                    success: function (items) {
+                        //$('#produklist').select2('val', 'selectedIndex', 0);
+                        //$("#produklist").data('placeholder');
+                        $("#produklist").append('<option value = "' + -1 + '" hidden disabled selected>' + "--Pilih Produk Diterima--" + '</option>');
+                        $.each(items.pembelianDetails, function (id, value) {
+                            var $option = $("<option/>", {
+                                value: value.pembelianDetailId,
+                                text: value.namaProduk
+                            });
+                            $("#produklist").append($option);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Gagal ambil data Produk' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                var optId = $(this).find('option:selected').attr('id')
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadPembelianDetail")',
+                    dataType: 'json',
+                    data: { id: $("#produklist").val() },
+                    success: function (item) {
+                        $.each(item, function () {
+                            $("#kodeproduk").val(item.kodeProduk);
+                            $("#namaproduk").val(item.namaProduk);                           
+                            $("#satuan").val(item.satuan);
+                            $("#qtydiorder").val(item.qty);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Gagal ambil data Produk' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $("#qtyditerima").val('1');
+            });
+        });
+    </script>
+
+    <script>
+        function qtyInput(qtySpecial) {
+            var qtySpecial = qtySpecial.replace(/[^0-9]+/g, "");
+            document.getElementById("qtyditerima").value = "";
+            document.getElementById("qtyditerima").value = qtySpecial;
+        };
+    </script>
+
+    <script>
+        var emptyRow = "<tr><td colspan='10' class='text-center'> Tidak ada item...</td></tr>";
+
+        $(document).ready(function () {
+            $('#tbldetailrcv tbody').append(emptyRow);
+
+            var detailItem = []
+            var detail = {};
+
+            var detailName = document.getElementsByClassName("row-productNumber");
+            var detailNameProduct = document.getElementsByClassName("row-productName");
+
+            $('#qtyditerima').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    swal({
+                        title: "Peringatan",
+                        text: "Silahkah Klik Tombol Tambah",
+                        type: "warning"
+                    });
+                }
+            });
+
+            //var QtyDiterima = document.getElementsByClassName("row-qtyditerima");
+            //var QtyDiorder = document.getElementsByClassName("row-qtydiorder");            
+
+            //Add button click function
+            $('#btnAdd').click(function () {
+                var QtyDiterima = parseInt($('#qtyditerima').val());
+                var QtyDiorder = parseInt($('#qtydiorder').val());
+
+                if (QtyDiterima == QtyDiorder ) {
+                    if (detailName.length >= 0) {
+                        var isValidItem = true;
+                        if ($('#kodeproduk').val().trim() == '') {
+                            isValidItem = false;
+                            $('#kodeproduk').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#kodeproduk').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#namaproduk').val().trim() == '') {
+                            isValidItem = false;
+                            $('#namaproduk').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#namaproduk').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#satuan').val().trim() == '') {
+                            isValidItem = false;
+                            $('#satuan').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#satuan').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if (!($('#qtydiorder').val().trim() != '' && !isNaN($('#qtydiorder').val().trim()))) {
+                            isValidItem = false;
+                            $('#qtydiorder').siblings('span.error').css('visibility', 'visible');
+                            $("#qtydiorder").val('').focus();
+                        } else {
+                            $('#qtydiorder').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        //Add Item to List if Valid
+                        if (isValidItem) {
+
+                            var productNumber = $('#kodeproduk').val().trim();
+                            var productName = $('#namaproduk').val().trim();
+                            var measurement = $('#satuan').val().trim();
+                            var qtydiorder = parseInt($('#qtydiorder').val().trim());
+                            var qtyditerima = parseInt($('#qtyditerima').val().trim());
+
+                            if ($('#tbldetailrcv tbody').children().children().length == 1) {
+                                $('#tbldetailrcv tbody').html('');
+                            }
+                            var no = $('#tbldetailrcv tbody').children().length + 1;
+                            //var no = 0;
+                            var dynamicName = '<tr><td>' + productName + '</td></tr>'
+
+                            //create dynamic html string
+                            let i;
+                            for (i = 0; i <= detailName.length; i++) {
+                                if (detailName.length == 0) {
+                                    checkDuplicate = undefined;
+                                }
+                                else if (detailName.length > 0 && detailName[i] != undefined) {
+                                    if (detailName[i].innerText != productNumber) {
+                                        checkDuplicate = undefined;
+                                    }
+                                    else {
+                                        swal({
+                                            title: "Peringatan",
+                                            text: "Nama produk " + detailNameProduct[i].innerText + " sudah ada",
+                                            type: "warning"
+                                        });
+
+                                        $("#kodeproduk, #namaproduk, #stoktersedia, #principal, #satuan, #qtydiorder, #harga, #diskon").val('');                                        
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#qtyditerima").val('');
+                                        return;
+                                    }
+                                }
+                            }
+
+                            function dataName(proName) {
+                                return proName == dynamicName;
+                            }
+
+
+
+                            if (checkDuplicate == undefined) {
+                                var dynamicTr = 
+                                `
+                                <tr id="R${no}" class="detailProduct">
+                                <td class="row-index text-center"><p>${no}</p></td>
+                                <td class="text-left row-productNumber"><input class="detkodeproduk" type="hidden" value="${productNumber}">${productNumber}</td>
+                                <td class="text-left row-productName"><input class="detnamaproduk" type="hidden" value="${productName}">${productName}</td>
+                                <td class="text-left"><input class="detsatuan" type="hidden" value="${measurement}">${measurement}</td>
+                                <td class="text-center"><input class="detdiorder" type="hidden" value="${qtydiorder}">${qtydiorder}</td>
+                                <td class="text-center"><input class="detditerima" type="hidden" value="${qtyditerima}">${qtyditerima}</td>
+                                <td class="text-center"> <button class="btn btn-danger btn-sm">X</button></td>
+                                </tr>
+                            `;
+
+                                $('#tbldetailrcv tbody').append(dynamicTr);
+
+                                detailItem.push(dynamicTr);
+
+                                $("#kodeproduk, #namaproduk, #stoktersedia, #principal, #satuan, #qtydiorder, #harga, #diskon").val('');                                
+                                $('#produklist').select2('val', 'selectedIndex', 0);
+                                $("#produklist").data('placeholder');
+                                $("#qtyditerima").val('');
+
+                                $('.btn-sm').click(function () {
+                                    var child = $(this).closest('tr').nextAll();
+
+                                    child.each(function () {
+                                        var id = $(this).attr('id');
+                                        if (id.length > 2) {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(2));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        } else {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(1));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        }
+                                    });
+
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item berhasil dihapus",
+                                        type: "success"
+                                    });
+
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item berhasil dihapus",
+                                        type: "success"
+                                    });
+
+                                    if ($('#tbldetailrcv tbody').children().children().length == 0) {
+                                        $('#tbldetailrcv tbody').append(emptyRow);
+                                    }
+                                });
+                            } else {
+                                $('#errorDisplay').siblings('span.error').css('visibility', 'visible');
+                                return;
+                            }
+                        }
+                    }
+                } else if (QtyDiterima > QtyDiorder) {
+                    $('#qtyditerima').val(1);
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Diterima Melebihi Qty Diorder !",
+                        type: "warning"
+                    });
+
+                    $("#kodeproduk, #namaproduk, #stoktersedia, #principal, #satuan, #qtydiorder, #harga, #diskon").val('');                    
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyditerima").val('');
+                } else if (QtyDiterima == 0) {
+                    $('#qtyditerima').val(1);
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Diterima Tidak Boleh 0",
+                        type: "warning"
+                    });
+
+                    $("#kodeproduk, #namaproduk, #stoktersedia, #principal, #satuan, #qtydiorder, #harga, #diskon").val('');                    
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyditerima").val('');
+                } else {
+                    $('#qtyditerima').val(1);
+                    swal({
+                        title: "Peringatan",
+                        text: "Qty Maksimal " + $('#qtydiorder').val(),
+                        type: "warning"
+                    });
+
+                    $("#kodeproduk, #namaproduk, #stoktersedia, #principal, #satuan, #qtydiorder, #harga, #diskon").val('');                    
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyditerima").val('');
+                }
+            });
+
+
+            //Delete Item
+            $('.btn-sm').click(function () {
+                var child = $(this).closest('tr').nextAll();
+
+                child.each(function () {
+                    var id = $(this).attr('id');
+                    if (id.length > 2) {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(2));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    } else {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(1));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    }
+                });
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item berhasil dihapus",
+                    type: "success"
+                });
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item berhasil dihapus",
+                    type: "success"
+                });
+
+                if ($('#tbldetailrcv tbody').children().children().length == 0) {
+                    $('#tbldetailrcv tbody').append(emptyRow);
+                }
+            });
+
+            //Save button click function
+            $('#submit').click(function () {
+                var isAllValid = true;
+                var detailItemDone = [];
+                var detailDone = {};
+                var pembelianNumber = $('#pembelianList').find(":selected").val();
+                var Status = $('#status').find(":selected").val();
+                
+                var detailTable = $('#tbldetailrcv tbody').children().children().length / 7;
+                var detailProdukList = document.getElementById("produklist").options.length - 1;
+
+                if (detailTable == detailProdukList) {
+                    if (detailItem.length == 0 && pembelianNumber == '' && Status == '') {
+                        $('#pembelianList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        $('#status').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Item pada tabel tidak boleh kosong",
+                            type: "warning"
+                        });
+                        //$('#tbldetailpr tbody').html('<tr><td colspan="10" class="text-center"><span style="color:red;">Item belum tersedia</span></td></tr>');
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && pembelianNumber == '' && Status == '') {
+                        $('#pembelianList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        $('#status').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Isi Form No. PO dan Status",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && pembelianNumber == '' && Status != '') {
+                        $('#pembelianList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Isi Form No. PO terlebih dahulu",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && pembelianNumber != '' && Status == '') {
+                        $('#status').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Isi Form Status terlebih dahulu",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length == 0 && pembelianNumber == '' && Status != '') {
+                        $('#pembelianList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Item pada tabel tidak boleh kosong",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length == 0 && pembelianNumber != '' && Status == '') {
+                        $('#status').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Peringatan",
+                            text: "Item pada tabel tidak boleh kosong",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length == 0 && pembelianNumber != '' && Status != '') {
+                        swal({
+                            title: "Peringatan",
+                            text: "Item pada tabel tidak boleh kosong",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else {
+                        $("#tbldetailrcv").find("tbody").children("tr").each(function (index, element) {
+                            //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeproduk,namaproduk,dst harus sama.
+                            detailDone.kodeproduk = $(element).find(".detkodeproduk").val();
+                            detailDone.namaproduk = $(element).find(".detnamaproduk").val();
+                            detailDone.satuan = $(element).find(".detsatuan").val();
+                            detailDone.qtydiorder = $(element).find(".detdiorder").val();
+                            detailDone.qtyditerima = $(element).find(".detditerima").val();
+                            detailItemDone.push(detailDone);
+                            detailDone = {};
+                        });
+
+                        var ReceiveOrderNumber = $('#receiveordernumber').val();
+                        var PembelianId = $('#pembelianList').val();
+                        var ReceiveById = $('#receivebyid').val();
+                        var Status = $('#status').val();
+                        var Catatan = $('#catatan').val();
+                        var ReceiveOrderDetail = detailItemDone;
+                    }
+
+                    if (isAllValid) {
+                        var dataPost = {};
+                        dataPost.ReceiveOrderNumber = ReceiveOrderNumber;
+                        dataPost.PembelianId = PembelianId;
+                        dataPost.ReceiveById = ReceiveById;
+                        dataPost.Status = Status;
+                        dataPost.Catatan = Catatan;
+                        dataPost.ReceiveOrderDetails = ReceiveOrderDetail;
+
+                        $(this).val('Sedang diproses...');
+
+                        $.post("@Url.Action("CreateReceiveOrder", "ReceiveOrder")", { model: dataPost },
+                            function (data) {
+                                window.location.href = data.redirectToUrl;
+                            }
+                        );
+                    }
+                } else {
+                    swal({
+                        title: "Peringatan",
+                        text: "Jumlah item yang dimasukan tidak sama, mohon periksa kembali !!!",
+                        type: "warning"
+                    });
+                }
+            });
+        });
+    </script>
+
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

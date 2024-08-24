@@ -1,0 +1,41 @@
+﻿@using NoiSys.Areas.MasterData.ViewModels;
+
+@{
+    ViewBag.Title = "Hapus Item";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@model ItemReimbursmentViewModel
+
+<div class="card card-red">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+
+    <form enctype="multipart/form-data" asp-controller="ItemReimbursment" asp-action="DeleteItemReimbursment" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="ItemReimbursmentId" />
+            <input hidden asp-for="KodeItemReimbursment" />
+            <input hidden asp-for="NamaItemReimbursment" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.NamaItemReimbursment)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.KodeItemReimbursment)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        <div class="card-footer">
+            @*<form asp-action="DeleteItemReimbursment" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="ItemReimbursment" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>
